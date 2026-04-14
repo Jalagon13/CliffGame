@@ -42,7 +42,6 @@ namespace CliffGame
                 _velocity.y = Mathf.Sqrt(2f * _jumpHeight * -_gravity);
             }
 
-
             _velocity.y += _gravity * Time.fixedDeltaTime;
             _characterController.Move(_velocity * Time.fixedDeltaTime);
         }

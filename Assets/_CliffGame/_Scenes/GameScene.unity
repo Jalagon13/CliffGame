@@ -450,6 +450,7 @@ GameObject:
   - component: {fileID: 1666041271}
   - component: {fileID: 1666041270}
   - component: {fileID: 1666041272}
+  - component: {fileID: 1666041273}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -526,6 +527,21 @@ MonoBehaviour:
   _sprintSpeed: 7
   _jumpHeight: 1.2
   _gravity: -15
+--- !u!114 &1666041273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1666041268}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4cd2ef2dc9f94418b7f328b986b1164, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CliffGame.PlayerLook
+  _mouseSensitivity: 75
+  _verticalLookClamp: 80
+  _playerCamera: {fileID: 330585546}
 --- !u!1 &1727807098
 GameObject:
   m_ObjectHideFlags: 0
