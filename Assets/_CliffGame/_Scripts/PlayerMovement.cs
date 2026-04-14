@@ -8,6 +8,9 @@ namespace CliffGame
         [Header("Movement")]
         [SerializeField] private float _walkSpeed = 4f;
         [SerializeField] private float _sprintSpeed = 7f;
+        [SerializeField] private float _acceleration = 20f;
+        [SerializeField] private float _deceleration = 24f;
+        [SerializeField] private float _airMovementMultiplier = 0.5f;
 
         [Header("Jump")]
         [SerializeField] private float _jumpHeight = 1.5f;
@@ -15,6 +18,7 @@ namespace CliffGame
         
         private CharacterController _characterController;
         private Vector3 _velocity;
+        private Vector3 _horizontalVelocity;
 
         private void Awake()
         {
@@ -33,9 +37,17 @@ namespace CliffGame
             }
 
             float moveSpeed = GameInput.Instance.IsHoldingSprintInput ? _sprintSpeed : _walkSpeed;
-            Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
+            Vector3 moveDirection = (transform.right * moveInput.x + transform.forward * moveInput.y).normalized;
+            
+            float airMultiplier = isGrounded ? 1f : _airMovementMultiplier;
+            Vector3 targetHorizontalVelocity = moveDirection * (moveSpeed * airMultiplier);
 
-            _characterController.Move(move * moveSpeed * Time.fixedDeltaTime);
+            bool hasMovementInput = moveInput.sqrMagnitude > 0.0001f;
+            
+            float accelerationRate = hasMovementInput ? _acceleration : _deceleration;
+            accelerationRate *= airMultiplier;
+            
+            _horizontalVelocity = Vector3.MoveTowards(_horizontalVelocity, targetHorizontalVelocity, accelerationRate * Time.fixedDeltaTime);
 
             if (isGrounded && GameInput.Instance.ConsumeJumpPressed())
             {
@@ -43,7 +55,10 @@ namespace CliffGame
             }
 
             _velocity.y += _gravity * Time.fixedDeltaTime;
-            _characterController.Move(_velocity * Time.fixedDeltaTime);
+
+            Vector3 frameVelocity = _horizontalVelocity;
+            frameVelocity.y = _velocity.y;
+            _characterController.Move(frameVelocity * Time.fixedDeltaTime);
         }
     }
 }

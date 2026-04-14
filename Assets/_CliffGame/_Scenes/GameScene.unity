@@ -525,6 +525,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CliffGame.PlayerMovement
   _walkSpeed: 4
   _sprintSpeed: 7
+  _acceleration: 35
+  _deceleration: 35
+  _airMovementMultiplier: 0.6
   _jumpHeight: 1.2
   _gravity: -15
 --- !u!114 &1666041273

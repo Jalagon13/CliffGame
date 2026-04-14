@@ -92,8 +92,7 @@ namespace CliffGame
 
         private void GameInput_OnSprint(InputAction.CallbackContext context)
         {
-            IsHoldingSprintInput = context.ReadValue<bool>();
-            Debug.Log($"IsHoldingSprintInput: {IsHoldingSprintInput}");
+            IsHoldingSprintInput = context.ReadValueAsButton();
         }
 
         private void GameInput_OnMove(InputAction.CallbackContext context)
