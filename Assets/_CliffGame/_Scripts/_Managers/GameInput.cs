@@ -17,12 +17,6 @@ namespace CliffGame
         public event Action OnPlaceBuild;
 
         private PlayerInput _playerInput;
-        private InputAction _toggleBuildModeAction;
-        private InputAction _selectFloorAction;
-        private InputAction _selectWallAction;
-        private InputAction _selectRampAction;
-        private InputAction _rotateBuildAction;
-        private InputAction _placeBuildAction;
 
         public Vector2 MoveInput { get; private set; }
         public bool IsHoldingSprintInput { get; private set; }
@@ -39,7 +33,6 @@ namespace CliffGame
             Instance = this;
 
             _playerInput = new();
-            CreateRuntimeBuildActions(_playerInput.Player.Get());
             _playerInput.Enable();
             
             _playerInput.Player.Move.started += GameInput_OnMove;
@@ -56,13 +49,13 @@ namespace CliffGame
             
             _playerInput.Player.Jump.started += GameInput_OnJump;
             _playerInput.Player.Jump.canceled += GameInput_OnJump;
-
-            _toggleBuildModeAction.started += BuildAction_OnToggleBuildMode;
-            _selectFloorAction.started += BuildAction_OnSelectFloor;
-            _selectWallAction.started += BuildAction_OnSelectWall;
-            _selectRampAction.started += BuildAction_OnSelectRamp;
-            _rotateBuildAction.started += BuildAction_OnRotateBuild;
-            _placeBuildAction.started += BuildAction_OnPlaceBuild;
+            
+            _playerInput.Build.ToggleBuildMode.started += BuildAction_OnToggleBuildMode;
+            _playerInput.Build.RotateBuild.started += BuildAction_OnRotateBuild;
+            _playerInput.Build.PlaceBuild.started += BuildAction_OnPlaceBuild;
+            _playerInput.Build.SelectFloor.started += BuildAction_OnSelectFloor;
+            _playerInput.Build.SelectWall.started += BuildAction_OnSelectWall;
+            _playerInput.Build.SelectRamp.started += BuildAction_OnSelectRamp;
         }
         
         private void OnDestroy()
@@ -84,12 +77,12 @@ namespace CliffGame
             _playerInput.Player.Jump.started -= GameInput_OnJump;
             _playerInput.Player.Jump.canceled -= GameInput_OnJump;
 
-            _toggleBuildModeAction.started -= BuildAction_OnToggleBuildMode;
-            _selectFloorAction.started -= BuildAction_OnSelectFloor;
-            _selectWallAction.started -= BuildAction_OnSelectWall;
-            _selectRampAction.started -= BuildAction_OnSelectRamp;
-            _rotateBuildAction.started -= BuildAction_OnRotateBuild;
-            _placeBuildAction.started -= BuildAction_OnPlaceBuild;
+            _playerInput.Build.ToggleBuildMode.started -= BuildAction_OnToggleBuildMode;
+            _playerInput.Build.RotateBuild.started -= BuildAction_OnRotateBuild;
+            _playerInput.Build.PlaceBuild.started -= BuildAction_OnPlaceBuild;
+            _playerInput.Build.SelectFloor.started -= BuildAction_OnSelectFloor;
+            _playerInput.Build.SelectWall.started -= BuildAction_OnSelectWall;
+            _playerInput.Build.SelectRamp.started -= BuildAction_OnSelectRamp;
         }
 
         private void PlayerInput_OnLook(InputAction.CallbackContext context)
@@ -108,6 +101,55 @@ namespace CliffGame
             IsHoldingDownJump = context.ReadValueAsButton();
             OnJump?.Invoke();
         }
+
+        private void GameInput_OnSprint(InputAction.CallbackContext context)
+        {
+            IsHoldingSprintInput = context.ReadValueAsButton();
+        }
+
+        private void GameInput_OnMove(InputAction.CallbackContext context)
+        {
+            MoveInput = context.ReadValue<Vector2>();
+            
+            OnMove?.Invoke(MoveInput);
+        }
+
+        private void BuildAction_OnToggleBuildMode(InputAction.CallbackContext _)
+        {
+            ToggleBuildModePressed = true;
+            OnToggleBuildMode?.Invoke();
+        }
+
+        private void BuildAction_OnSelectFloor(InputAction.CallbackContext _)
+        {
+            PendingBuildPieceSelection = BuildPieceType.Floor;
+            OnBuildPieceSelected?.Invoke(BuildPieceType.Floor);
+        }
+
+        private void BuildAction_OnSelectWall(InputAction.CallbackContext _)
+        {
+            PendingBuildPieceSelection = BuildPieceType.Wall;
+            OnBuildPieceSelected?.Invoke(BuildPieceType.Wall);
+        }
+
+        private void BuildAction_OnSelectRamp(InputAction.CallbackContext _)
+        {
+            PendingBuildPieceSelection = BuildPieceType.Ramp;
+            OnBuildPieceSelected?.Invoke(BuildPieceType.Ramp);
+        }
+
+        private void BuildAction_OnRotateBuild(InputAction.CallbackContext _)
+        {
+            RotateBuildPressed = true;
+            OnRotateBuild?.Invoke();
+        }
+
+        private void BuildAction_OnPlaceBuild(InputAction.CallbackContext _)
+        {
+            PlaceBuildPressed = true;
+            OnPlaceBuild?.Invoke();
+        }
+
 
         public bool ConsumeJumpPressed()
         {
@@ -166,62 +208,12 @@ namespace CliffGame
             return true;
         }
 
-        private void GameInput_OnSprint(InputAction.CallbackContext context)
+        public void ClearBuildCommandBuffer()
         {
-            IsHoldingSprintInput = context.ReadValueAsButton();
-        }
-
-        private void GameInput_OnMove(InputAction.CallbackContext context)
-        {
-            MoveInput = context.ReadValue<Vector2>();
-            
-            OnMove?.Invoke(MoveInput);
-        }
-
-        private void CreateRuntimeBuildActions(InputActionMap playerMap)
-        {
-            _toggleBuildModeAction = playerMap.AddAction("ToggleBuildMode", InputActionType.Button, "<Keyboard>/b");
-            _selectFloorAction = playerMap.AddAction("BuildFloor", InputActionType.Button, "<Keyboard>/1");
-            _selectWallAction = playerMap.AddAction("BuildWall", InputActionType.Button, "<Keyboard>/2");
-            _selectRampAction = playerMap.AddAction("BuildRamp", InputActionType.Button, "<Keyboard>/3");
-            _rotateBuildAction = playerMap.AddAction("BuildRotate", InputActionType.Button, "<Keyboard>/r");
-            _placeBuildAction = playerMap.AddAction("BuildPlace", InputActionType.Button, "<Mouse>/leftButton");
-        }
-
-        private void BuildAction_OnToggleBuildMode(InputAction.CallbackContext _)
-        {
-            ToggleBuildModePressed = true;
-            OnToggleBuildMode?.Invoke();
-        }
-
-        private void BuildAction_OnSelectFloor(InputAction.CallbackContext _)
-        {
-            PendingBuildPieceSelection = BuildPieceType.Floor;
-            OnBuildPieceSelected?.Invoke(BuildPieceType.Floor);
-        }
-
-        private void BuildAction_OnSelectWall(InputAction.CallbackContext _)
-        {
-            PendingBuildPieceSelection = BuildPieceType.Wall;
-            OnBuildPieceSelected?.Invoke(BuildPieceType.Wall);
-        }
-
-        private void BuildAction_OnSelectRamp(InputAction.CallbackContext _)
-        {
-            PendingBuildPieceSelection = BuildPieceType.Ramp;
-            OnBuildPieceSelected?.Invoke(BuildPieceType.Ramp);
-        }
-
-        private void BuildAction_OnRotateBuild(InputAction.CallbackContext _)
-        {
-            RotateBuildPressed = true;
-            OnRotateBuild?.Invoke();
-        }
-
-        private void BuildAction_OnPlaceBuild(InputAction.CallbackContext _)
-        {
-            PlaceBuildPressed = true;
-            OnPlaceBuild?.Invoke();
+            ToggleBuildModePressed = false;
+            RotateBuildPressed = false;
+            PlaceBuildPressed = false;
+            PendingBuildPieceSelection = null;
         }
     }
 }

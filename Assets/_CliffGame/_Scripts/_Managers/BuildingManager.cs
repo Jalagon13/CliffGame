@@ -5,6 +5,8 @@ namespace CliffGame
 {
     public class BuildingManager : MonoBehaviour
     {
+        public static BuildingManager Instance { get; private set; }
+
         [Header("Scene References")]
         [SerializeField] private Camera _buildCamera;
         [SerializeField] private BuildGhostController _ghostController;
@@ -18,11 +20,6 @@ namespace CliffGame
         [SerializeField] private Vector3 _gridOrigin = Vector3.zero;
         [SerializeField] private float _cellSize = 1f;
 
-        [Header("Piece Sizes (for collision validation)")]
-        [SerializeField] private Vector3 _floorPieceSize = new(1f, 0.2f, 1f);
-        [SerializeField] private Vector3 _wallPieceSize = new(0.2f, 1f, 1f);
-        [SerializeField] private Vector3 _rampPieceSize = new(1f, 0.2f, 1.4f);
-
         [Header("Placement")]
         [SerializeField] private float _buildRange = 3f;
         [SerializeField] private LayerMask _buildRaycastMask = ~0;
@@ -34,8 +31,6 @@ namespace CliffGame
         [SerializeField] private RampDir _selectedRampDirection = RampDir.North;
         [SerializeField] private FaceDir _preferredWallFace = FaceDir.North;
         [SerializeField] private List<PlacedPieceRecord> _placedPieceRecords = new();
-
-        public static BuildingManager Instance { get; private set; }
 
         private readonly Dictionary<CellKey, CellRecord> _cells = new();
         private readonly Dictionary<FaceKey, GameObject> _walls = new();
@@ -53,9 +48,9 @@ namespace CliffGame
                 _cells,
                 _walls,
                 _collisionMask,
-                _floorPieceSize,
-                _wallPieceSize,
-                _rampPieceSize);
+                GetPrefabBoundsSize(_floorPiecePrefab, new Vector3(1f, 0.2f, 1f)),
+                GetPrefabBoundsSize(_wallPiecePrefab, new Vector3(0.2f, 1f, 1f)),
+                GetPrefabBoundsSize(_rampPiecePrefab, new Vector3(1f, 0.2f, 1.4f)));
             _targetingService = new BuildTargetingService(_gridService);
 
             if (_ghostController != null)
@@ -143,7 +138,9 @@ namespace CliffGame
                 return false;
             }
 
-            GameObject instance = Instantiate(prefab, candidate.WorldPosition, candidate.WorldRotation);
+            Quaternion prefabAuthoredRotation = prefab.transform.rotation;
+            Quaternion finalRotation = candidate.WorldRotation * prefabAuthoredRotation;
+            GameObject instance = Instantiate(prefab, candidate.WorldPosition, finalRotation);
             RegisterPlacedPiece(candidate, instance);
 
             return true;
@@ -151,14 +148,11 @@ namespace CliffGame
 
         private void HandleBuildInput()
         {
-            if (GameInput.Instance == null)
-            {
-                return;
-            }
-
             if (GameInput.Instance.ConsumeToggleBuildModePressed())
             {
                 _buildModeEnabled = !_buildModeEnabled;
+                Debug.Log($"BuildMode Active: {_buildModeEnabled}");
+                GameInput.Instance.ClearBuildCommandBuffer();
                 if (!_buildModeEnabled && _ghostController != null)
                 {
                     _ghostController.Hide();
@@ -232,8 +226,43 @@ namespace CliffGame
             {
                 BuildPieceType.Floor => _floorPiecePrefab,
                 BuildPieceType.Wall => _wallPiecePrefab,
-                _ => _rampPiecePrefab,
+                BuildPieceType.Ramp => _rampPiecePrefab,
+                _ => _floorPiecePrefab,
             };
+        }
+
+        private static Vector3 GetPrefabBoundsSize(GameObject prefab, Vector3 fallback)
+        {
+            if (prefab == null)
+            {
+                return fallback;
+            }
+
+            Collider[] colliders = prefab.GetComponentsInChildren<Collider>(true);
+            if (colliders.Length > 0)
+            {
+                Bounds colliderBounds = colliders[0].bounds;
+                for (int i = 1; i < colliders.Length; i++)
+                {
+                    colliderBounds.Encapsulate(colliders[i].bounds);
+                }
+
+                return colliderBounds.size;
+            }
+
+            Renderer[] renderers = prefab.GetComponentsInChildren<Renderer>(true);
+            if (renderers.Length > 0)
+            {
+                Bounds renderBounds = renderers[0].bounds;
+                for (int i = 1; i < renderers.Length; i++)
+                {
+                    renderBounds.Encapsulate(renderers[i].bounds);
+                }
+
+                return renderBounds.size;
+            }
+
+            return fallback;
         }
 
         private void RegisterPlacedPiece(PlacementCandidate candidate, GameObject pieceInstance)

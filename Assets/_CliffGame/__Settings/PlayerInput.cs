@@ -134,7 +134,7 @@ namespace CliffGame
                     ""name"": ""Crouch"",
                     ""type"": ""Button"",
                     ""id"": ""27c5f898-bc57-4ee1-8800-db469aca5fe3"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
@@ -559,6 +559,134 @@ namespace CliffGame
                     ""processors"": """",
                     ""groups"": ""Keyboard&Mouse"",
                     ""action"": ""Crouch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Build"",
+            ""id"": ""1df2f6c2-d34d-4f89-bc76-d688f1cc1367"",
+            ""actions"": [
+                {
+                    ""name"": ""ToggleBuildMode"",
+                    ""type"": ""Button"",
+                    ""id"": ""30895d33-41a4-4026-8420-e51438eb59c2"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""RotateBuild"",
+                    ""type"": ""Button"",
+                    ""id"": ""b5d20681-58c6-4894-83d4-4172edba06fe"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectFloor"",
+                    ""type"": ""Button"",
+                    ""id"": ""371a0e2d-8289-4ef0-83f8-7748e567a62b"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectWall"",
+                    ""type"": ""Button"",
+                    ""id"": ""bca40292-f0a6-43c2-a30f-ff72fe5260f6"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectRamp"",
+                    ""type"": ""Button"",
+                    ""id"": ""1b6468c3-deac-41ad-bd74-4207b65f6073"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""PlaceBuild"",
+                    ""type"": ""Button"",
+                    ""id"": ""201136b7-a26c-4d04-afe5-bf6d05c9661d"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""f6a99227-c04a-49dc-824c-1332669b8b46"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ToggleBuildMode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f5ca54c7-2ada-40df-b1c6-5401610dfdb4"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""RotateBuild"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cd67ad39-c0f1-4dd1-9cb9-314e55dd7b03"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SelectFloor"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""996d2ad4-dc11-416d-b982-a7b536c7bd5d"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SelectWall"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""52f61dc5-ae12-4119-9c67-c1a3ee909a20"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""SelectRamp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1f70cf78-aade-4cf3-b203-5c6876186c2b"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""PlaceBuild"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1155,6 +1283,14 @@ namespace CliffGame
             m_Player_Previous = m_Player.FindAction("Previous", throwIfNotFound: true);
             m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
             m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
+            // Build
+            m_Build = asset.FindActionMap("Build", throwIfNotFound: true);
+            m_Build_ToggleBuildMode = m_Build.FindAction("ToggleBuildMode", throwIfNotFound: true);
+            m_Build_RotateBuild = m_Build.FindAction("RotateBuild", throwIfNotFound: true);
+            m_Build_SelectFloor = m_Build.FindAction("SelectFloor", throwIfNotFound: true);
+            m_Build_SelectWall = m_Build.FindAction("SelectWall", throwIfNotFound: true);
+            m_Build_SelectRamp = m_Build.FindAction("SelectRamp", throwIfNotFound: true);
+            m_Build_PlaceBuild = m_Build.FindAction("PlaceBuild", throwIfNotFound: true);
             // UI
             m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
             m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1172,6 +1308,7 @@ namespace CliffGame
         ~@PlayerInput()
         {
             UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerInput.Player.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_Build.enabled, "This will cause a leak and performance issues, PlayerInput.Build.Disable() has not been called.");
             UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, PlayerInput.UI.Disable() has not been called.");
         }
 
@@ -1428,6 +1565,157 @@ namespace CliffGame
         /// Provides a new <see cref="PlayerActions" /> instance referencing this action map.
         /// </summary>
         public PlayerActions @Player => new PlayerActions(this);
+
+        // Build
+        private readonly InputActionMap m_Build;
+        private List<IBuildActions> m_BuildActionsCallbackInterfaces = new List<IBuildActions>();
+        private readonly InputAction m_Build_ToggleBuildMode;
+        private readonly InputAction m_Build_RotateBuild;
+        private readonly InputAction m_Build_SelectFloor;
+        private readonly InputAction m_Build_SelectWall;
+        private readonly InputAction m_Build_SelectRamp;
+        private readonly InputAction m_Build_PlaceBuild;
+        /// <summary>
+        /// Provides access to input actions defined in input action map "Build".
+        /// </summary>
+        public struct BuildActions
+        {
+            private @PlayerInput m_Wrapper;
+
+            /// <summary>
+            /// Construct a new instance of the input action map wrapper class.
+            /// </summary>
+            public BuildActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+            /// <summary>
+            /// Provides access to the underlying input action "Build/ToggleBuildMode".
+            /// </summary>
+            public InputAction @ToggleBuildMode => m_Wrapper.m_Build_ToggleBuildMode;
+            /// <summary>
+            /// Provides access to the underlying input action "Build/RotateBuild".
+            /// </summary>
+            public InputAction @RotateBuild => m_Wrapper.m_Build_RotateBuild;
+            /// <summary>
+            /// Provides access to the underlying input action "Build/SelectFloor".
+            /// </summary>
+            public InputAction @SelectFloor => m_Wrapper.m_Build_SelectFloor;
+            /// <summary>
+            /// Provides access to the underlying input action "Build/SelectWall".
+            /// </summary>
+            public InputAction @SelectWall => m_Wrapper.m_Build_SelectWall;
+            /// <summary>
+            /// Provides access to the underlying input action "Build/SelectRamp".
+            /// </summary>
+            public InputAction @SelectRamp => m_Wrapper.m_Build_SelectRamp;
+            /// <summary>
+            /// Provides access to the underlying input action "Build/PlaceBuild".
+            /// </summary>
+            public InputAction @PlaceBuild => m_Wrapper.m_Build_PlaceBuild;
+            /// <summary>
+            /// Provides access to the underlying input action map instance.
+            /// </summary>
+            public InputActionMap Get() { return m_Wrapper.m_Build; }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+            public void Enable() { Get().Enable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+            public void Disable() { Get().Disable(); }
+            /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+            public bool enabled => Get().enabled;
+            /// <summary>
+            /// Implicitly converts an <see ref="BuildActions" /> to an <see ref="InputActionMap" /> instance.
+            /// </summary>
+            public static implicit operator InputActionMap(BuildActions set) { return set.Get(); }
+            /// <summary>
+            /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <param name="instance">Callback instance.</param>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+            /// </remarks>
+            /// <seealso cref="BuildActions" />
+            public void AddCallbacks(IBuildActions instance)
+            {
+                if (instance == null || m_Wrapper.m_BuildActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_BuildActionsCallbackInterfaces.Add(instance);
+                @ToggleBuildMode.started += instance.OnToggleBuildMode;
+                @ToggleBuildMode.performed += instance.OnToggleBuildMode;
+                @ToggleBuildMode.canceled += instance.OnToggleBuildMode;
+                @RotateBuild.started += instance.OnRotateBuild;
+                @RotateBuild.performed += instance.OnRotateBuild;
+                @RotateBuild.canceled += instance.OnRotateBuild;
+                @SelectFloor.started += instance.OnSelectFloor;
+                @SelectFloor.performed += instance.OnSelectFloor;
+                @SelectFloor.canceled += instance.OnSelectFloor;
+                @SelectWall.started += instance.OnSelectWall;
+                @SelectWall.performed += instance.OnSelectWall;
+                @SelectWall.canceled += instance.OnSelectWall;
+                @SelectRamp.started += instance.OnSelectRamp;
+                @SelectRamp.performed += instance.OnSelectRamp;
+                @SelectRamp.canceled += instance.OnSelectRamp;
+                @PlaceBuild.started += instance.OnPlaceBuild;
+                @PlaceBuild.performed += instance.OnPlaceBuild;
+                @PlaceBuild.canceled += instance.OnPlaceBuild;
+            }
+
+            /// <summary>
+            /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+            /// </summary>
+            /// <remarks>
+            /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+            /// </remarks>
+            /// <seealso cref="BuildActions" />
+            private void UnregisterCallbacks(IBuildActions instance)
+            {
+                @ToggleBuildMode.started -= instance.OnToggleBuildMode;
+                @ToggleBuildMode.performed -= instance.OnToggleBuildMode;
+                @ToggleBuildMode.canceled -= instance.OnToggleBuildMode;
+                @RotateBuild.started -= instance.OnRotateBuild;
+                @RotateBuild.performed -= instance.OnRotateBuild;
+                @RotateBuild.canceled -= instance.OnRotateBuild;
+                @SelectFloor.started -= instance.OnSelectFloor;
+                @SelectFloor.performed -= instance.OnSelectFloor;
+                @SelectFloor.canceled -= instance.OnSelectFloor;
+                @SelectWall.started -= instance.OnSelectWall;
+                @SelectWall.performed -= instance.OnSelectWall;
+                @SelectWall.canceled -= instance.OnSelectWall;
+                @SelectRamp.started -= instance.OnSelectRamp;
+                @SelectRamp.performed -= instance.OnSelectRamp;
+                @SelectRamp.canceled -= instance.OnSelectRamp;
+                @PlaceBuild.started -= instance.OnPlaceBuild;
+                @PlaceBuild.performed -= instance.OnPlaceBuild;
+                @PlaceBuild.canceled -= instance.OnPlaceBuild;
+            }
+
+            /// <summary>
+            /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="BuildActions.UnregisterCallbacks(IBuildActions)" />.
+            /// </summary>
+            /// <seealso cref="BuildActions.UnregisterCallbacks(IBuildActions)" />
+            public void RemoveCallbacks(IBuildActions instance)
+            {
+                if (m_Wrapper.m_BuildActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            /// <summary>
+            /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+            /// </summary>
+            /// <remarks>
+            /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+            /// </remarks>
+            /// <seealso cref="BuildActions.AddCallbacks(IBuildActions)" />
+            /// <seealso cref="BuildActions.RemoveCallbacks(IBuildActions)" />
+            /// <seealso cref="BuildActions.UnregisterCallbacks(IBuildActions)" />
+            public void SetCallbacks(IBuildActions instance)
+            {
+                foreach (var item in m_Wrapper.m_BuildActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_BuildActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        /// <summary>
+        /// Provides a new <see cref="BuildActions" /> instance referencing this action map.
+        /// </summary>
+        public BuildActions @Build => new BuildActions(this);
 
         // UI
         private readonly InputActionMap m_UI;
@@ -1758,6 +2046,56 @@ namespace CliffGame
             /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
             /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
             void OnSprint(InputAction.CallbackContext context);
+        }
+        /// <summary>
+        /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Build" which allows adding and removing callbacks.
+        /// </summary>
+        /// <seealso cref="BuildActions.AddCallbacks(IBuildActions)" />
+        /// <seealso cref="BuildActions.RemoveCallbacks(IBuildActions)" />
+        public interface IBuildActions
+        {
+            /// <summary>
+            /// Method invoked when associated input action "ToggleBuildMode" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnToggleBuildMode(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "RotateBuild" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnRotateBuild(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "SelectFloor" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSelectFloor(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "SelectWall" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSelectWall(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "SelectRamp" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnSelectRamp(InputAction.CallbackContext context);
+            /// <summary>
+            /// Method invoked when associated input action "PlaceBuild" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+            /// </summary>
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+            /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+            void OnPlaceBuild(InputAction.CallbackContext context);
         }
         /// <summary>
         /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

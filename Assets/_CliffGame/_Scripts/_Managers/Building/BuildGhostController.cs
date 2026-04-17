@@ -21,7 +21,7 @@ namespace CliffGame
         private GameObject _rampGhost;
         private BuildPieceType _selectedPiece;
 
-        private readonly MaterialPropertyBlock _propertyBlock = new();
+        private MaterialPropertyBlock _propertyBlock;
 
         private void Awake()
         {
@@ -99,16 +99,24 @@ namespace CliffGame
             {
                 BuildPieceType.Floor => _floorGhost,
                 BuildPieceType.Wall => _wallGhost,
-                _ => _rampGhost,
+                BuildPieceType.Ramp => _rampGhost,
+                _ => _floorGhost,
             };
         }
 
         private void SetGhostColor(GameObject ghost, Color color)
         {
+            _propertyBlock ??= new MaterialPropertyBlock();
+
             Renderer[] renderers = ghost.GetComponentsInChildren<Renderer>(true);
             for (int i = 0; i < renderers.Length; i++)
             {
                 Renderer renderer = renderers[i];
+                if (renderer == null)
+                {
+                    continue;
+                }
+
                 renderer.GetPropertyBlock(_propertyBlock);
                 _propertyBlock.SetColor(BaseColor, color);
                 _propertyBlock.SetColor(ColorProp, color);
