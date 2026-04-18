@@ -54,7 +54,6 @@ namespace CliffGame.Tests
                 hitPoint: Vector3.zero,
                 connectorMask: 1 << 0,
                 connectorSearchRadius: 1f,
-                wallAttachMode: WallAttachMode.Perpendicular,
                 isCandidatePreferred: null,
                 out PlacementCandidate candidate);
 
@@ -89,7 +88,6 @@ namespace CliffGame.Tests
                 hitPoint: root.transform.position,
                 connectorMask: 1 << 0,
                 connectorSearchRadius: 1f,
-                wallAttachMode: WallAttachMode.Perpendicular,
                 isCandidatePreferred: _ => true,
                 out PlacementCandidate candidate);
 
@@ -97,6 +95,40 @@ namespace CliffGame.Tests
             Assert.IsTrue(candidate.HasFace);
             Assert.AreEqual(FaceDir.East, candidate.Face.Face);
             Assert.AreEqual(new CellKey(0, 0, 0), candidate.Face.Owner);
+
+            Object.DestroyImmediate(root);
+        }
+
+        [Test]
+        public void ConnectorTargeting_WallSideAttach_AlwaysAligned()
+        {
+            BuildGridService grid = new BuildGridService(Vector3.zero, 1f);
+            BuildTargetingService targeting = new BuildTargetingService(grid);
+
+            GameObject root = new GameObject("AlignedWallAnchor");
+            PlacedBuildPiece placed = root.AddComponent<PlacedBuildPiece>();
+            FaceKey anchorFace = grid.Canonicalize(new FaceKey(new CellKey(0, 2, 0), FaceDir.East));
+            placed.Initialize(BuildPieceType.Wall, default, true, anchorFace);
+
+            GameObject connectorObject = new GameObject("ConnectorSide");
+            connectorObject.transform.SetParent(root.transform, false);
+            connectorObject.transform.localPosition = new Vector3(0f, 0f, 0.5f);
+            SphereCollider collider = connectorObject.AddComponent<SphereCollider>();
+            collider.isTrigger = true;
+            connectorObject.AddComponent<Connector>();
+            Physics.SyncTransforms();
+
+            bool found = targeting.TryGetCandidateFromConnector(
+                BuildPieceType.Wall,
+                hitPoint: root.transform.position + new Vector3(0f, 0f, 0.5f),
+                connectorMask: 1 << 0,
+                connectorSearchRadius: 1f,
+                isCandidatePreferred: _ => true,
+                out PlacementCandidate candidate);
+
+            Assert.IsTrue(found);
+            Assert.IsTrue(candidate.HasFace);
+            Assert.AreEqual(anchorFace.Face, candidate.Face.Face);
 
             Object.DestroyImmediate(root);
         }

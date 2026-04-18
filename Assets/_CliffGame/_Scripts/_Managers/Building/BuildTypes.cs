@@ -38,12 +38,6 @@ namespace CliffGame
         West = 3,
     }
 
-    public enum WallAttachMode
-    {
-        Perpendicular = 0,
-        Aligned = 1,
-    }
-
     public enum PlacementInvalidReason
     {
         None = 0,

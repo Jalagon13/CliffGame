@@ -11,7 +11,6 @@ namespace CliffGame
 
         [Header("Ghost Colors")]
         [SerializeField] private Color _validColor = new(0.2f, 1f, 0.35f, 0.45f);
-        [SerializeField] private Color _invalidColor = new(1f, 0.25f, 0.25f, 0.45f);
 
         private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
         private static readonly int ColorProp = Shader.PropertyToID("_Color");
@@ -38,6 +37,12 @@ namespace CliffGame
 
         public void Show(PlacementCandidate candidate, bool isValid)
         {
+            if (!isValid)
+            {
+                Hide();
+                return;
+            }
+
             GameObject selectedGhost = GetGhostForSelectedType();
             if (selectedGhost == null)
             {
@@ -48,7 +53,7 @@ namespace CliffGame
             selectedGhost.transform.SetPositionAndRotation(candidate.WorldPosition, candidate.WorldRotation);
             selectedGhost.SetActive(true);
 
-            SetGhostColor(selectedGhost, isValid ? _validColor : _invalidColor);
+            SetGhostColor(selectedGhost, _validColor);
         }
 
         public void Hide()

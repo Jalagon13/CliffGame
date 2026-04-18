@@ -33,7 +33,6 @@ namespace CliffGame
         [SerializeField] private bool _buildModeEnabled;
         [SerializeField] private BuildPieceType _selectedPiece = BuildPieceType.Floor;
         [SerializeField] private RampDir _selectedRampDirection = RampDir.North;
-        [SerializeField] private WallAttachMode _wallAttachMode = WallAttachMode.Aligned;
         [SerializeField] private FaceDir _preferredWallFace = FaceDir.North;
         [SerializeField] private List<PlacedPieceRecord> _placedPieceRecords = new();
 
@@ -120,7 +119,6 @@ namespace CliffGame
                         hit.point,
                         _connectorMask,
                         _connectorSearchRadius,
-                        _wallAttachMode,
                         IsConnectorCandidatePreferred,
                         out candidate))
                 {
@@ -209,14 +207,6 @@ namespace CliffGame
             if (_selectedPiece == BuildPieceType.Ramp)
             {
                 _selectedRampDirection = (RampDir)(((int)_selectedRampDirection + 1) % 4);
-                return;
-            }
-
-            if (_selectedPiece == BuildPieceType.Wall)
-            {
-                _wallAttachMode = _wallAttachMode == WallAttachMode.Perpendicular
-                    ? WallAttachMode.Aligned
-                    : WallAttachMode.Perpendicular;
             }
         }
 

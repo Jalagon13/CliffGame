@@ -19,7 +19,6 @@ namespace CliffGame
             Vector3 hitPoint,
             LayerMask connectorMask,
             float connectorSearchRadius,
-            WallAttachMode wallAttachMode,
             Func<PlacementCandidate, bool> isCandidatePreferred,
             out PlacementCandidate candidate)
         {
@@ -68,7 +67,7 @@ namespace CliffGame
                     continue;
                 }
 
-                if (!TryBuildCandidateFromConnector(selectedPiece, connector, placed, wallAttachMode, out PlacementCandidate probe))
+                if (!TryBuildCandidateFromConnector(selectedPiece, connector, placed, out PlacementCandidate probe))
                 {
                     continue;
                 }
@@ -199,7 +198,6 @@ namespace CliffGame
             BuildPieceType selectedPiece,
             Connector connector,
             PlacedBuildPiece anchorPiece,
-            WallAttachMode wallAttachMode,
             out PlacementCandidate candidate)
         {
             candidate = default;
@@ -241,18 +239,10 @@ namespace CliffGame
                 FaceKey canonicalFace;
                 if (anchorPiece.HasFace && IsHorizontalFace(worldFace))
                 {
-                    if (wallAttachMode == WallAttachMode.Aligned)
-                    {
-                        // Keep the same wall orientation, move the segment sideways.
-                        FaceDir anchorFace = anchorPiece.Face.Face;
-                        CellKey shiftedOwner = _grid.GetNeighborCell(anchorPiece.Face.Owner, worldFace);
-                        canonicalFace = _grid.CanonicalFaceForCell(shiftedOwner, anchorFace);
-                    }
-                    else
-                    {
-                        // Build perpendicular to the anchor wall using connector outward direction.
-                        canonicalFace = _grid.CanonicalFaceForCell(anchorCell, worldFace);
-                    }
+                    // Keep the same wall orientation, move the segment sideways.
+                    FaceDir anchorFace = anchorPiece.Face.Face;
+                    CellKey shiftedOwner = _grid.GetNeighborCell(anchorPiece.Face.Owner, worldFace);
+                    canonicalFace = _grid.CanonicalFaceForCell(shiftedOwner, anchorFace);
                 }
                 else
                 {
