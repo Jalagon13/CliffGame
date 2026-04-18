@@ -1525,15 +1525,9 @@ MonoBehaviour:
   _floorPiecePrefab: {fileID: 6630664959160868556, guid: 8569f511efd874f7f8b209d5d6920e89, type: 3}
   _wallPiecePrefab: {fileID: 6630664959160868556, guid: 2f7d34357e302469dad86ed386f8f7ca, type: 3}
   _rampPiecePrefab: {fileID: 6630664959160868556, guid: bf30426c1e46a459985ab520b52f1d5b, type: 3}
-  _floorRotationOffsetEuler: {x: 0, y: 0, z: 0}
-  _wallRotationOffsetEuler: {x: 0, y: 0, z: 0}
-  _rampRotationOffsetEuler: {x: 45, y: 0, z: 0}
   _gridOrigin: {x: 0, y: 0, z: 0}
   _cellSize: 1
-  _floorPieceSize: {x: 1, y: 0.2, z: 1}
-  _wallPieceSize: {x: 1, y: 1, z: 0.2}
-  _rampPieceSize: {x: 1, y: 0.2, z: 1.414}
-  _buildRange: 3
+  _buildRange: 4
   _buildRaycastMask:
     serializedVersion: 2
     m_Bits: 55
