@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace CliffGame
@@ -11,6 +12,103 @@ namespace CliffGame
         public BuildTargetingService(BuildGridService grid)
         {
             _grid = grid;
+        }
+
+        public bool TryGetCandidateFromConnector(
+            BuildPieceType selectedPiece,
+            Vector3 hitPoint,
+            LayerMask connectorMask,
+            float connectorSearchRadius,
+            WallAttachMode wallAttachMode,
+            Func<PlacementCandidate, bool> isCandidatePreferred,
+            out PlacementCandidate candidate)
+        {
+            candidate = default;
+
+            if (selectedPiece != BuildPieceType.Floor && selectedPiece != BuildPieceType.Wall)
+            {
+                return false;
+            }
+
+            Collider[] overlaps = Physics.OverlapSphere(
+                hitPoint,
+                Mathf.Max(0.01f, connectorSearchRadius),
+                connectorMask,
+                QueryTriggerInteraction.Collide);
+
+            float bestPreferredSqrDistance = float.MaxValue;
+            float bestAnySqrDistance = float.MaxValue;
+            bool foundPreferred = false;
+            bool foundAny = false;
+            PlacementCandidate bestAnyCandidate = default;
+            PlacementCandidate bestPreferredCandidate = default;
+
+            for (int i = 0; i < overlaps.Length; i++)
+            {
+                Collider connectorCollider = overlaps[i];
+                if (connectorCollider == null)
+                {
+                    continue;
+                }
+
+                Connector connector = connectorCollider.GetComponent<Connector>();
+                if (connector == null)
+                {
+                    connector = connectorCollider.GetComponentInParent<Connector>();
+                }
+
+                if (connector == null || !connector.Allows(selectedPiece))
+                {
+                    continue;
+                }
+
+                PlacedBuildPiece placed = connector.GetComponentInParent<PlacedBuildPiece>();
+                if (placed == null)
+                {
+                    continue;
+                }
+
+                if (!TryBuildCandidateFromConnector(selectedPiece, connector, placed, wallAttachMode, out PlacementCandidate probe))
+                {
+                    continue;
+                }
+
+                float sqrDistance = (connectorCollider.transform.position - hitPoint).sqrMagnitude;
+                bool preferred = isCandidatePreferred != null && isCandidatePreferred(probe);
+
+                if (preferred)
+                {
+                    if (!foundPreferred || sqrDistance < bestPreferredSqrDistance)
+                    {
+                        bestPreferredSqrDistance = sqrDistance;
+                        bestPreferredCandidate = probe;
+                        foundPreferred = true;
+                    }
+
+                    continue;
+                }
+
+                if (!foundAny || sqrDistance < bestAnySqrDistance)
+                {
+                    bestAnySqrDistance = sqrDistance;
+                    bestAnyCandidate = probe;
+                    foundAny = true;
+                }
+            }
+
+            if (foundPreferred)
+            {
+                candidate = bestPreferredCandidate;
+                return true;
+            }
+
+            if (foundAny)
+            {
+                candidate = bestAnyCandidate;
+                return true;
+            }
+
+            return false;
         }
 
         public bool TryGetCandidate(
@@ -95,6 +193,84 @@ namespace CliffGame
             }
 
             return normal.z >= 0f ? FaceDir.North : FaceDir.South;
+        }
+
+        private bool TryBuildCandidateFromConnector(
+            BuildPieceType selectedPiece,
+            Connector connector,
+            PlacedBuildPiece anchorPiece,
+            WallAttachMode wallAttachMode,
+            out PlacementCandidate candidate)
+        {
+            candidate = default;
+            CellKey anchorCell = anchorPiece.GetAnchorCell();
+            FaceDir worldFace = connector.ResolveWorldFace(anchorPiece.transform);
+
+            if (selectedPiece == BuildPieceType.Floor)
+            {
+                CellKey targetCell = _grid.GetNeighborCell(anchorCell, worldFace);
+                Vector3 position = _grid.GetCellBottomCenter(targetCell);
+                candidate = PlacementCandidate.ForCell(
+                    BuildPieceType.Floor,
+                    targetCell,
+                    RampDir.North,
+                    position,
+                    Quaternion.identity);
+                return true;
+            }
+
+            if (selectedPiece == BuildPieceType.Wall)
+            {
+                if (worldFace == FaceDir.Up || worldFace == FaceDir.Down)
+                {
+                    if (!anchorPiece.HasFace)
+                    {
+                        return false;
+                    }
+
+                    int yOffset = worldFace == FaceDir.Up ? 1 : -1;
+                    FaceKey stacked = anchorPiece.Face;
+                    stacked.Owner = new CellKey(stacked.Owner.X, stacked.Owner.Y + yOffset, stacked.Owner.Z);
+                    FaceKey canonicalStacked = _grid.Canonicalize(stacked);
+                    Vector3 stackedPosition = _grid.GetWallCenter(canonicalStacked);
+                    Quaternion stackedRotation = _grid.GetWallRotation(canonicalStacked.Face);
+                    candidate = PlacementCandidate.ForFace(canonicalStacked, stackedPosition, stackedRotation);
+                    return true;
+                }
+
+                FaceKey canonicalFace;
+                if (anchorPiece.HasFace && IsHorizontalFace(worldFace))
+                {
+                    if (wallAttachMode == WallAttachMode.Aligned)
+                    {
+                        // Keep the same wall orientation, move the segment sideways.
+                        FaceDir anchorFace = anchorPiece.Face.Face;
+                        CellKey shiftedOwner = _grid.GetNeighborCell(anchorPiece.Face.Owner, worldFace);
+                        canonicalFace = _grid.CanonicalFaceForCell(shiftedOwner, anchorFace);
+                    }
+                    else
+                    {
+                        // Build perpendicular to the anchor wall using connector outward direction.
+                        canonicalFace = _grid.CanonicalFaceForCell(anchorCell, worldFace);
+                    }
+                }
+                else
+                {
+                    canonicalFace = _grid.CanonicalFaceForCell(anchorCell, worldFace);
+                }
+
+                Vector3 position = _grid.GetWallCenter(canonicalFace);
+                Quaternion rotation = _grid.GetWallRotation(canonicalFace.Face);
+                candidate = PlacementCandidate.ForFace(canonicalFace, position, rotation);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IsHorizontalFace(FaceDir face)
+        {
+            return face == FaceDir.North || face == FaceDir.East || face == FaceDir.South || face == FaceDir.West;
         }
     }
 }

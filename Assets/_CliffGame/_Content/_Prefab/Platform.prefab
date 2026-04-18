@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8831353558950932175}
   - component: {fileID: 8019541053401136259}
   - component: {fileID: 148349632857434796}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Connector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -67,6 +67,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CliffGame.Connector
   _connectorFace: 3
+  _allowedPieces: 3
+  _axisDominanceThreshold: 0.35
 --- !u!1 &3792831001805159281
 GameObject:
   m_ObjectHideFlags: 0
@@ -78,7 +80,7 @@ GameObject:
   - component: {fileID: 4476333463068486404}
   - component: {fileID: 5277389358872586189}
   - component: {fileID: 7769715277091076743}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Connector_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -134,6 +136,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CliffGame.Connector
   _connectorFace: 1
+  _allowedPieces: 3
+  _axisDominanceThreshold: 0.35
 --- !u!1 &4307531850871821848
 GameObject:
   m_ObjectHideFlags: 0
@@ -180,7 +184,7 @@ GameObject:
   - component: {fileID: 1417378609920994081}
   - component: {fileID: 2885127688339956374}
   - component: {fileID: 206206835365597563}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Connector_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -236,6 +240,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CliffGame.Connector
   _connectorFace: 0
+  _allowedPieces: 3
+  _axisDominanceThreshold: 0.35
 --- !u!1 &6630664959160868556
 GameObject:
   m_ObjectHideFlags: 0
@@ -267,7 +273,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4393935814292452009}
@@ -604,7 +610,7 @@ GameObject:
   - component: {fileID: 6214251856804192131}
   - component: {fileID: 6543523330851350229}
   - component: {fileID: 4866844797313613626}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Connector_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -660,3 +666,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CliffGame.Connector
   _connectorFace: 2
+  _allowedPieces: 3
+  _axisDominanceThreshold: 0.35

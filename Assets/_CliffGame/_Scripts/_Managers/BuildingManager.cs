@@ -24,11 +24,16 @@ namespace CliffGame
         [SerializeField] private float _buildRange = 3f;
         [SerializeField] private LayerMask _buildRaycastMask = ~0;
         [SerializeField] private LayerMask _collisionMask = 0;
+        
+        [Header("Connectors")]
+        [SerializeField] private LayerMask _connectorMask = 0;
+        [SerializeField] private float _connectorSearchRadius = 0.45f;
 
         [Header("Debug/Runtime State")]
         [SerializeField] private bool _buildModeEnabled;
         [SerializeField] private BuildPieceType _selectedPiece = BuildPieceType.Floor;
         [SerializeField] private RampDir _selectedRampDirection = RampDir.North;
+        [SerializeField] private WallAttachMode _wallAttachMode = WallAttachMode.Aligned;
         [SerializeField] private FaceDir _preferredWallFace = FaceDir.North;
         [SerializeField] private List<PlacedPieceRecord> _placedPieceRecords = new();
 
@@ -108,6 +113,21 @@ namespace CliffGame
             }
 
             Ray ray = new Ray(buildCam.transform.position, buildCam.transform.forward);
+            if (Physics.Raycast(ray, out RaycastHit hit, _buildRange, _buildRaycastMask, QueryTriggerInteraction.Ignore))
+            {
+                if (_targetingService.TryGetCandidateFromConnector(
+                        selected,
+                        hit.point,
+                        _connectorMask,
+                        _connectorSearchRadius,
+                        _wallAttachMode,
+                        IsConnectorCandidatePreferred,
+                        out candidate))
+                {
+                    return true;
+                }
+            }
+
             return _targetingService.TryGetCandidate(
                 selected,
                 _selectedRampDirection,
@@ -148,6 +168,11 @@ namespace CliffGame
 
         private void HandleBuildInput()
         {
+            if (GameInput.Instance == null)
+            {
+                return;
+            }
+
             if (GameInput.Instance.ConsumeToggleBuildModePressed())
             {
                 _buildModeEnabled = !_buildModeEnabled;
@@ -189,7 +214,9 @@ namespace CliffGame
 
             if (_selectedPiece == BuildPieceType.Wall)
             {
-                _preferredWallFace = (FaceDir)(((int)_preferredWallFace + 1) % 4);
+                _wallAttachMode = _wallAttachMode == WallAttachMode.Perpendicular
+                    ? WallAttachMode.Aligned
+                    : WallAttachMode.Perpendicular;
             }
         }
 
@@ -287,6 +314,7 @@ namespace CliffGame
                         Face = default,
                         RampDirection = RampDir.North,
                     });
+                    AttachPlacedPieceMetadata(pieceInstance, BuildPieceType.Floor, candidate.Cell, false, default);
                     break;
                 }
 
@@ -309,6 +337,7 @@ namespace CliffGame
                         Face = default,
                         RampDirection = candidate.RampDirection,
                     });
+                    AttachPlacedPieceMetadata(pieceInstance, BuildPieceType.Ramp, candidate.Cell, false, default);
                     break;
                 }
 
@@ -325,9 +354,36 @@ namespace CliffGame
                         Face = canonicalFace,
                         RampDirection = RampDir.North,
                     });
+                    AttachPlacedPieceMetadata(pieceInstance, BuildPieceType.Wall, default, true, canonicalFace);
                     break;
                 }
             }
+        }
+
+        private bool IsConnectorCandidatePreferred(PlacementCandidate candidate)
+        {
+            return _ruleService.Validate(candidate, checkRange: false, inRange: true).IsValid;
+        }
+
+        private static void AttachPlacedPieceMetadata(
+            GameObject piece,
+            BuildPieceType type,
+            CellKey cell,
+            bool hasFace,
+            FaceKey face)
+        {
+            if (piece == null)
+            {
+                return;
+            }
+
+            PlacedBuildPiece metadata = piece.GetComponent<PlacedBuildPiece>();
+            if (metadata == null)
+            {
+                metadata = piece.AddComponent<PlacedBuildPiece>();
+            }
+
+            metadata.Initialize(type, cell, hasFace, face);
         }
 
     }

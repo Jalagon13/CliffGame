@@ -71,7 +71,7 @@ namespace CliffGame
                         return PlacementValidationResult.Invalid(PlacementInvalidReason.Occupied);
                     }
 
-                    if (!HasAdjacentFloor(canonicalFace))
+                    if (!HasAdjacentFloor(canonicalFace) && !HasWallSupport(canonicalFace))
                     {
                         return PlacementValidationResult.Invalid(PlacementInvalidReason.NeedsAdjacentFloor);
                     }
@@ -100,6 +100,63 @@ namespace CliffGame
         {
             _grid.GetWallAdjacentCells(faceKey, out CellKey a, out CellKey b);
             return HasFloor(a) || HasFloor(b);
+        }
+
+        private bool HasWallSupport(FaceKey faceKey)
+        {
+            FaceKey below = new FaceKey(new CellKey(faceKey.Owner.X, faceKey.Owner.Y - 1, faceKey.Owner.Z), faceKey.Face);
+            FaceKey above = new FaceKey(new CellKey(faceKey.Owner.X, faceKey.Owner.Y + 1, faceKey.Owner.Z), faceKey.Face);
+            FaceKey belowCanonical = _grid.Canonicalize(below);
+            FaceKey aboveCanonical = _grid.Canonicalize(above);
+            if (_walls.ContainsKey(belowCanonical) || _walls.ContainsKey(aboveCanonical))
+            {
+                return true;
+            }
+
+            // Allow side growth of wall networks at the same height.
+            CellKey[] sideCells =
+            {
+                new CellKey(faceKey.Owner.X + 1, faceKey.Owner.Y, faceKey.Owner.Z),
+                new CellKey(faceKey.Owner.X - 1, faceKey.Owner.Y, faceKey.Owner.Z),
+                new CellKey(faceKey.Owner.X, faceKey.Owner.Y, faceKey.Owner.Z + 1),
+                new CellKey(faceKey.Owner.X, faceKey.Owner.Y, faceKey.Owner.Z - 1),
+            };
+
+            for (int i = 0; i < sideCells.Length; i++)
+            {
+                FaceKey sameOrientationNeighbor = _grid.Canonicalize(new FaceKey(sideCells[i], faceKey.Face));
+                if (_walls.ContainsKey(sameOrientationNeighbor))
+                {
+                    return true;
+                }
+            }
+
+            // Allow intersections where two wall orientations meet in one cell column.
+            FaceKey north = _grid.Canonicalize(new FaceKey(faceKey.Owner, FaceDir.North));
+            FaceKey east = _grid.Canonicalize(new FaceKey(faceKey.Owner, FaceDir.East));
+            if (_walls.ContainsKey(north) || _walls.ContainsKey(east))
+            {
+                return true;
+            }
+
+            // Permissive adjacency support for side-attached walls:
+            // if any wall exists in the surrounding 3x3 neighborhood at same height,
+            // treat it as structural support for this segment.
+            for (int dx = -1; dx <= 1; dx++)
+            {
+                for (int dz = -1; dz <= 1; dz++)
+                {
+                    CellKey neighbor = new CellKey(faceKey.Owner.X + dx, faceKey.Owner.Y, faceKey.Owner.Z + dz);
+                    FaceKey neighborNorth = _grid.Canonicalize(new FaceKey(neighbor, FaceDir.North));
+                    FaceKey neighborEast = _grid.Canonicalize(new FaceKey(neighbor, FaceDir.East));
+                    if (_walls.ContainsKey(neighborNorth) || _walls.ContainsKey(neighborEast))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private bool HasAnySupport(CellKey cell)
@@ -167,10 +224,12 @@ namespace CliffGame
                 _ => _wallSize,
             };
 
+            float padding = candidate.PieceType == BuildPieceType.Wall ? 0.06f : 0.01f;
+
             Vector3 extents = new Vector3(
-                Mathf.Max(0.01f, size.x * 0.5f - 0.01f),
-                Mathf.Max(0.01f, size.y * 0.5f - 0.01f),
-                Mathf.Max(0.01f, size.z * 0.5f - 0.01f));
+                Mathf.Max(0.01f, size.x * 0.5f - padding),
+                Mathf.Max(0.01f, size.y * 0.5f - padding),
+                Mathf.Max(0.01f, size.z * 0.5f - padding));
 
             return !Physics.CheckBox(
                 candidate.WorldPosition,

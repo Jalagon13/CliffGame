@@ -3,6 +3,16 @@ using UnityEngine;
 
 namespace CliffGame
 {
+    [Flags]
+    public enum BuildPieceMask
+    {
+        None = 0,
+        Floor = 1 << 0,
+        Wall = 1 << 1,
+        Ramp = 1 << 2,
+        All = Floor | Wall | Ramp,
+    }
+
     public enum BuildPieceType
     {
         Floor = 0,
@@ -26,6 +36,12 @@ namespace CliffGame
         East = 1,
         South = 2,
         West = 3,
+    }
+
+    public enum WallAttachMode
+    {
+        Perpendicular = 0,
+        Aligned = 1,
     }
 
     public enum PlacementInvalidReason

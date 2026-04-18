@@ -56,8 +56,62 @@ namespace CliffGame
                 FaceDir.North => Vector3.forward,
                 FaceDir.East => Vector3.right,
                 FaceDir.South => Vector3.back,
-                _ => Vector3.left,
+                FaceDir.West => Vector3.left,
+                FaceDir.Up => Vector3.up,
+                FaceDir.Down => Vector3.down,
+                _ => Vector3.forward,
             };
+        }
+
+        public FaceDir WorldDirectionToFaceDir(Vector3 worldDirection, float dominanceThreshold = 0.35f)
+        {
+            Vector3 normalized = worldDirection.normalized;
+            float absX = Mathf.Abs(normalized.x);
+            float absY = Mathf.Abs(normalized.y);
+            float absZ = Mathf.Abs(normalized.z);
+            float largest = Mathf.Max(absX, Mathf.Max(absY, absZ));
+
+            if (largest < Mathf.Max(0.01f, dominanceThreshold))
+            {
+                return FaceDir.North;
+            }
+
+            if (absY >= absX && absY >= absZ)
+            {
+                return normalized.y >= 0f ? FaceDir.Up : FaceDir.Down;
+            }
+
+            if (absX >= absZ)
+            {
+                return normalized.x >= 0f ? FaceDir.East : FaceDir.West;
+            }
+
+            return normalized.z >= 0f ? FaceDir.North : FaceDir.South;
+        }
+
+        public CellKey GetFaceDelta(FaceDir faceDir)
+        {
+            return faceDir switch
+            {
+                FaceDir.North => new CellKey(0, 0, 1),
+                FaceDir.East => new CellKey(1, 0, 0),
+                FaceDir.South => new CellKey(0, 0, -1),
+                FaceDir.West => new CellKey(-1, 0, 0),
+                FaceDir.Up => new CellKey(0, 1, 0),
+                FaceDir.Down => new CellKey(0, -1, 0),
+                _ => new CellKey(0, 0, 0),
+            };
+        }
+
+        public CellKey GetNeighborCell(CellKey cell, FaceDir faceDir)
+        {
+            CellKey delta = GetFaceDelta(faceDir);
+            return new CellKey(cell.X + delta.X, cell.Y + delta.Y, cell.Z + delta.Z);
+        }
+
+        public FaceKey CanonicalFaceForCell(CellKey cell, FaceDir faceDir)
+        {
+            return Canonicalize(new FaceKey(cell, faceDir));
         }
 
         public Quaternion GetWallRotation(FaceDir faceDir)
